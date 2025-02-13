@@ -1,29 +1,43 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "baseUrl": ".",
+    "target": "esnext", // Usa una versión más moderna de ES
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ], // Mantén compatibilidad con ESNext
+    "allowJs": true, // Permite archivos JavaScript
+    "skipLibCheck": true, // Evita la comprobación de bibliotecas
+    "strict": true, // Activa todas las opciones estrictas
+    "forceConsistentCasingInFileNames": true, // Fuerza nombres consistentes
+    "esModuleInterop": true, // Para interoperabilidad con módulos CommonJS
+    "module": "ESNext", // Usa módulos ESNext
+    "moduleResolution": "node", // Resolución de módulos al estilo Node.js
+    "resolveJsonModule": true, // Permite importar archivos JSON
+    "isolatedModules": true, // Asegura que cada archivo se pueda transpilar por separado
+    "jsx": "preserve", // Permite JSX en Next.js
+    "incremental": true, // Habilita la compilación incremental
+    "baseUrl": ".", // Establece la base para las rutas de importación
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "noEmit": false // Genera los archivos JavaScript de salida
+    ,
     "plugins": [
       {
         "name": "next"
       }
-    ],
-    "paths": {
-      "@/*": ["./*"]
-    }
+    ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
