@@ -4,3 +4,4 @@ app/(default)/
 app/componentes/
 app/css
 app/*.tsx
+components/**
