@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext", // Usa una versión más moderna de ES
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ], // Mantén compatibilidad con ESNext
+    "lib": ["dom", "dom.iterable", "esnext"], // Mantén compatibilidad con ESNext
     "allowJs": true, // Permite archivos JavaScript
     "skipLibCheck": true, // Evita la comprobación de bibliotecas
     "strict": true, // Activa todas las opciones estrictas
@@ -19,25 +15,15 @@
     "incremental": true, // Habilita la compilación incremental
     "baseUrl": ".", // Establece la base para las rutas de importación
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     },
-    "noEmit": false // Genera los archivos JavaScript de salida
-    ,
+    "noEmit": true, // No genera los archivos JavaScript de salida
     "plugins": [
       {
         "name": "next"
       }
     ]
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }
