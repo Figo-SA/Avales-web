@@ -1,7 +1,6 @@
-# .vercelignore
-app/(auth)/
-app/(default)/
-app/componentes/
-app/css
-app/*.tsx
-components/**
+# Ignorar todo en app/ excepto app/api
+app/*
+!app/api/
+
+# Ignorar todo en components/
+components/
