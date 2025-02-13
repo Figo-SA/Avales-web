@@ -1,6 +1,8 @@
 // app/api/hello/route.ts
-import { NextResponse } from "next/server";
+const { NextResponse } = require("next/server");
 
-export async function GET(request: Request) {
+async function GET(request: any) {
   return NextResponse.json({ message: "Hello, Next.js!" });
 }
+
+module.exports = { GET };
