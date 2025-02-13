@@ -1,6 +1,0 @@
-# Ignorar todo en app/ excepto app/api
-app/*
-!app/api/
-
-# Ignorar todo en components/
-components/
