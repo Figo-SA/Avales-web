@@ -1,0 +1,5 @@
+# .vercelignore
+app/auth/
+app/componentes/
+app/css
+app/*.tsx
