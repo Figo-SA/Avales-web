@@ -1,5 +1,6 @@
 # .vercelignore
-app/auth/
+app/(auth)/
+app/(default)/
 app/componentes/
 app/css
 app/*.tsx
