@@ -1,3 +1,2 @@
-app/**/**
-!app/api/
-components/**
+app/(auth)
+app/(default)
