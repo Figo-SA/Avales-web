@@ -19,6 +19,13 @@ export async function GET(request: Request) {
 
       const usuario = await prisma.usuario.findUnique({
         where: { id: usuarioId },
+        include: {
+          UsuariosRol: {
+            include: {
+              Rol: true, // Incluir los roles relacionados
+            },
+          },
+        },
       });
 
       if (!usuario) {
@@ -41,6 +48,13 @@ export async function GET(request: Request) {
       skip,
       take,
       orderBy: { nombre: "asc" },
+      include: {
+        UsuariosRol: {
+          include: {
+            Rol: true, // Incluir los roles relacionados
+          },
+        },
+      },
     });
     const totalPaginas = Math.ceil(totalUsuarios / take); // Calcular total de páginas
 
