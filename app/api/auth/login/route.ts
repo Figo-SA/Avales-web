@@ -32,7 +32,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const passwordMatch = await bcrypt.compare(password, usuario.password);
+    const passwordMatch = password === usuario.password;
+    // const passwordMatch = await bcrypt.compare(password, usuario.password);
     if (!passwordMatch) {
       return NextResponse.json(
         { error: "Contraseña incorrecta" },
