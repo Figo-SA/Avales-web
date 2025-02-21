@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 
 export async function POST(request: Request) {
   try {
-    console.log("POST /api/auth/login");
     const { email, password } = await request.json();
 
     const usuario = await prisma.usuario.findUnique({
