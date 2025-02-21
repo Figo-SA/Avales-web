@@ -1,71 +1,122 @@
-export const metadata = {
-  title: 'Sign In - Mosaic',
-  description: 'Page description',
-}
+"use client"; 
 
-import Link from 'next/link'
-import AuthHeader from '../auth-header'
-import AuthImage from '../auth-image'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import AuthImage from '../auth-image';
+import LogoFederacion from '@/public/images/logoFederacion.png';
 
 export default function SignIn() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('https://avales-web.vercel.app/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("token", data.token); // Guardar el token en localStorage
+        router.push('/dashboard'); // Redirigir al Dashboard
+      } else {
+        setError(data.message || 'Usuario o contraseña incorrectos.');
+      }
+    } catch (error) {
+      setError('Error de conexión. Inténtalo nuevamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <main className="bg-white dark:bg-slate-900">
-
-      <div className="relative md:flex">
-
-        {/* Content */}
-        <div className="md:w-1/2">
-          <div className="min-h-[100dvh] h-full flex flex-col after:flex-1">
-
-            <AuthHeader />
-
-            <div className="max-w-sm mx-auto w-full px-4 py-8">
-              <h1 className="text-3xl text-slate-800 dark:text-slate-100 font-bold mb-6">Welcome back! ✨</h1>
-              {/* Form */}
-              <form>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1" htmlFor="email">Email Address</label>
-                    <input id="email" className="form-input w-full" type="email" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1" htmlFor="password">Password</label>
-                    <input id="password" className="form-input w-full" type="password" autoComplete="on" />
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-6">
-                  <div className="mr-1">
-                    <Link className="text-sm underline hover:no-underline" href="/reset-password">Forgot Password?</Link>
-                  </div>
-                  <Link className="btn bg-indigo-500 hover:bg-indigo-600 text-white ml-3" href="/">Sign In</Link>
-                </div>
-              </form>
-              {/* Footer */}
-              <div className="pt-5 mt-6 border-t border-slate-200 dark:border-slate-700">
-                <div className="text-sm">
-                  Don't you have an account? <Link className="font-medium text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400" href="/signup">Sign Up</Link>
-                </div>
-                {/* Warning */}
-                <div className="mt-5">
-                  <div className="bg-amber-100 dark:bg-amber-400/30 text-amber-600 dark:text-amber-400 px-3 py-2 rounded">
-                    <svg className="inline w-3 h-3 shrink-0 fill-current mr-2" viewBox="0 0 12 12">
-                      <path d="M10.28 1.28L3.989 7.575 1.695 5.28A1 1 0 00.28 6.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 1.28z" />
-                    </svg>
-                    <span className="text-sm">
-                      To support you during the pandemic super pro features are free until March 31st.
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <AuthImage />
-
+    <main className="bg-white dark:bg-slate-900 flex h-screen">
+      {/* Sección de la imagen (lado izquierdo) */}
+      <div className="hidden md:flex w-1/2 relative">
+        <AuthImage className="absolute inset-0 w-full h-full object-cover" />
       </div>
 
+      {/* Sección del formulario (lado derecho) */}
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-6 relative">
+        {/* Logo en la parte superior derecha */}
+        <div className="absolute top-4 right-4">
+          <Image 
+            src={LogoFederacion}
+            alt="Logo Federación Deportiva"
+            width={80} // No modificar en CSS
+            height={80} // No modificar en CSS
+            style={{ width: "auto", height: "auto" }} // Ajusta el tamaño sin distorsionar
+            className="object-contain"
+          />
+        </div>
+
+        {/* Contenedor del formulario */}
+        <div className="max-w-sm w-full">
+          <h1 className="text-3xl font-bold text-center text-slate-800 dark:text-slate-100 mb-6">
+            Federación Deportiva Provincial de Loja
+          </h1>
+
+          <form onSubmit={handleSubmit} className="space-y-10">
+            <div>
+              <label className="block text-sm font-medium mb-1" htmlFor="email">Usuario</label>
+              <input 
+                id="email" 
+                className="form-input w-full border-gray-300 rounded-md p-2" 
+                type="text" 
+                aria-label="Usuario"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1" htmlFor="password">Contraseña</label>
+              <input 
+                id="password" 
+                className="form-input w-full border-gray-300 rounded-md p-2" 
+                type="password" 
+                autoComplete="current-password"
+                aria-label="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            {/* Mensaje de error formal */}
+            {error && (
+              <div className="bg-red-600 text-white text-sm p-3 rounded-md border-l-4 border-red-800 shadow-md flex items-center">
+                <svg className="w-5 h-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M5.22 5.22a9 9 0 0113.56 0m1.42 1.42a9 9 0 01-1.42 12.72m-1.42-1.42a9 9 0 01-12.72 1.42m-1.42-1.42a9 9 0 011.42-12.72" />
+                </svg>
+                <span className="font-medium">{error}</span>
+              </div>
+            )}
+
+            {/* Botón de inicio de sesión */}
+            <div className="flex justify-center mt-6">
+              <button 
+                type="submit" 
+                className={`w-full flex justify-center items-center bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-md transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={loading}
+              >
+                {loading ? 'Ingresando...' : 'Ingresar'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </main>
-  )
+  );
 }
