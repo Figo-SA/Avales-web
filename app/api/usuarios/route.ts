@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -16,14 +17,15 @@ export async function GET(request: Request) {
     const totalUsuarios = await prisma.usuario.count(); // Contar total de usuarios
     const totalPaginas = Math.ceil(totalUsuarios / take); // Calcular total de páginas
 
-    return new Response(
-      JSON.stringify({
-        pagina,
-        totalPaginas,
-        totalUsuarios,
-        usuarios,
-      })
-    );
+    // return NextResponse.json(
+    //   JSON.stringify({
+    //     pagina,
+    //     totalPaginas,
+    //     totalUsuarios,
+    //     usuarios,
+    //   })
+    // );
+    return NextResponse.json({ pagina, totalPaginas, totalUsuarios, usuarios });
   } catch (error) {
     console.error("Error al obtener usuarios:", error);
     return new Response(
