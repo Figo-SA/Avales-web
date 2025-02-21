@@ -164,12 +164,21 @@ export async function PUT(request: Request) {
       cedula,
       categoria_id,
       disciplina_id,
+      roles, // Roles seleccionados que se desean asignar al usuario
     } = await request.json();
 
     // Validar que el ID esté presente
     if (!id) {
       return NextResponse.json(
         { error: "El ID del usuario es obligatorio" },
+        { status: 400 }
+      );
+    }
+
+    // Validar que roles esté presente y no vacío
+    if (!roles || roles.length === 0) {
+      return NextResponse.json(
+        { error: "Debe proporcionar al menos un rol" },
         { status: 400 }
       );
     }
@@ -185,6 +194,13 @@ export async function PUT(request: Request) {
         cedula,
         categoria_id,
         disciplina_id,
+        // Actualizar los roles: eliminar los roles actuales y asignar los nuevos
+        UsuariosRol: {
+          deleteMany: { usuario_id: id }, // Eliminar roles existentes
+          create: roles.map((rolId: number) => ({
+            rol_id: rolId, // Crear las nuevas relaciones con los roles
+          })),
+        },
       },
     });
 
