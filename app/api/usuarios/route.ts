@@ -103,6 +103,7 @@ export async function POST(request: Request) {
       cedula,
       categoria_id,
       disciplina_id,
+      roles, // Asumimos que roles es un array de IDs de los roles seleccionados
     } = await request.json();
 
     // Validar campos obligatorios
@@ -113,10 +114,12 @@ export async function POST(request: Request) {
       !apellido ||
       !cedula ||
       !categoria_id ||
-      !disciplina_id
+      !disciplina_id ||
+      !roles ||
+      roles.length === 0 // Validar que roles esté presente y no esté vacío
     ) {
       return NextResponse.json(
-        { error: "Todos los campos son obligatorios" },
+        { error: "Todos los campos son obligatorios, incluyendo los roles" },
         { status: 400 }
       );
     }
@@ -131,6 +134,11 @@ export async function POST(request: Request) {
         cedula,
         categoria_id,
         disciplina_id,
+        UsuariosRol: {
+          create: roles.map((rolId: number) => ({
+            rol_id: rolId, // Asociar cada rol seleccionado al usuario
+          })),
+        },
       },
     });
 
