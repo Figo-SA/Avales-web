@@ -1,7 +1,20 @@
-import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+
+export async function OPTIONS() {
+  return NextResponse.json(
+    {},
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    }
+  );
+}
 
 export async function POST(request: Request) {
   try {
@@ -30,7 +43,7 @@ export async function POST(request: Request) {
     const JWT = process.env.JWT_SECRET;
     if (!JWT) {
       return NextResponse.json(
-        { error: "Error la clave de JWT no esta definida" },
+        { error: "Error: la clave de JWT no está definida" },
         { status: 500 }
       );
     }
@@ -39,9 +52,18 @@ export async function POST(request: Request) {
       expiresIn: "1h",
     });
 
-    return NextResponse.json({ token });
+    return NextResponse.json(
+      { token },
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        },
+      }
+    );
   } catch (er) {
-    console.log(er);
+    console.error(er);
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  title: API de Avales
+  version: 1.0.0
+  description: API para manejar documentos de avales.
+servers:
+  - url: https://avales-web.vercel.app/ # Cambia esto por la URL base de tu API
+    description: Servidor local
+paths:
+  /api/auth/login:
+    post:
+      summary: Iniciar sesión
+      description: |
+        Recibe un email y un password, verifica las credenciales y devuelve un JSON Web Token (JWT) si son válidas.
+        - Si el usuario no existe, devuelve un error 404.
+        - Si la contraseña es incorrecta, devuelve un error 401.
+        - Si hay un error interno del servidor, devuelve un error 500.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: usuario@ejemplo.com
+                  description: El email del usuario.
+                password:
+                  type: string
+                  format: password
+                  example: contraseña123
+                  description: La contraseña del usuario.
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: Inicio de sesión exitoso. Devuelve un JWT.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    description: Token JWT para autenticar al usuario.
+        "401":
+          description: Contraseña incorrecta.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Contraseña incorrecta
+                    description: Mensaje de error indicando que la contraseña es incorrecta.
+        "404":
+          description: Usuario no encontrado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Usuario no encontrado
+                    description: Mensaje de error indicando que el usuario no existe.
+        "500":
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Error interno del servidor
+                    description: Mensaje de error genérico para errores del servidor.
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Mensaje de error.
