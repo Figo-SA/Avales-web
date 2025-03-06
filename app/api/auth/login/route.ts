@@ -18,8 +18,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const passwordMatch = password === usuario.password;
-    // const passwordMatch = await bcrypt.compare(password, usuario.password);
+    // Nota: Veo que tienes bcrypt.compare comentado,
+    // asumiendo que estás usando bcrypt, descomenta esa línea y elimina la comparación directa
+    const passwordMatch = await bcrypt.compare(password, usuario.password);
+    // const passwordMatch = password === usuario.password; // Elimina esta línea
+
     if (!passwordMatch) {
       return NextResponse.json(
         { error: "Contraseña incorrecta" },
@@ -39,7 +42,16 @@ export async function POST(request: Request) {
       expiresIn: "1h",
     });
 
-    return NextResponse.json({ token });
+    // Modifica la respuesta para incluir tanto el token como el usuario
+    return NextResponse.json({
+      token,
+      usuario: {
+        id: usuario.id,
+        email: usuario.email,
+        // Agrega aquí cualquier otro campo del usuario que quieras devolver
+        // pero evita devolver la contraseña por seguridad
+      },
+    });
   } catch (er) {
     console.log(er);
     return NextResponse.json(
