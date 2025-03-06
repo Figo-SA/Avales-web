@@ -43,10 +43,8 @@ export async function POST(request: Request) {
     // Modifica la respuesta para incluir tanto el token como el usuario
     return NextResponse.json({
       token,
-      usuario: {
-        id: usuario.id,
-        email: usuario.email,
-      },
+      id: usuario.id,
+      email: usuario.email,
     });
   } catch (er) {
     console.log(er);
