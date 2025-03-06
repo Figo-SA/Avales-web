@@ -6,15 +6,78 @@ info:
 servers:
   - url: https://avales-web.vercel.app/ # Cambia esto por la URL base de tu API
     description: Servidor local
+tags:
+  - name: Usuarios
+    description: Operaciones relacionadas con los usuarios
+  - name: Roles
+    description: Operaciones relacionadas con los roles
+  - name: Disciplinas
+    description: Operaciones relacionadas con las disciplinas
 paths:
-  /api/auth/login:
+  /api/login:
     post:
-      summary: Iniciar sesión
-      description: |
-        Recibe un email y un password, verifica las credenciales y devuelve un JSON Web Token (JWT) si son válidas.
-        - Si el usuario no existe, devuelve un error 404.
-        - Si la contraseña es incorrecta, devuelve un error 401.
-        - Si hay un error interno del servidor, devuelve un error 500.
+      summary: Inicia sesión de un usuario
+      description: Autentica a un usuario y devuelve un token JWT junto con información del usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Autenticación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Contraseña incorrecta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/usuarios:
+    get:
+      summary: Obtener usuarios
+      tags:
+        - Usuarios
+      description: Obtiene una lista paginada de usuarios o un usuario específico por ID.
+      parameters:
+        - name: id
+          in: query
+          description: ID del usuario a buscar
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: Número de página para la paginación
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de usuarios obtenida correctamente
+        "400":
+          description: Error en los parámetros de entrada
+        "404":
+          description: Usuario no encontrado
+    post:
+      summary: Crear un nuevo usuario
+      tags:
+        - Usuarios
+      description: Crea un nuevo usuario con los datos proporcionados.
       requestBody:
         required: true
         content:
@@ -24,133 +87,350 @@ paths:
               properties:
                 email:
                   type: string
-                  format: email
-                  example: usuario@ejemplo.com
-                  description: El email del usuario.
                 password:
                   type: string
-                  format: password
-                  example: contraseña123
-                  description: La contraseña del usuario.
-              required:
-                - email
-                - password
+                nombre:
+                  type: string
+                apellido:
+                  type: string
+                cedula:
+                  type: string
+                categoria_id:
+                  type: integer
+                disciplina_id:
+                  type: integer
+                roles:
+                  type: array
+                  items:
+                    type: integer
       responses:
-        "200":
-          description: Inicio de sesión exitoso. Devuelve un JWT.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-                    description: Token JWT para autenticar al usuario.
-        "401":
-          description: Contraseña incorrecta.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Contraseña incorrecta
-                    description: Mensaje de error indicando que la contraseña es incorrecta.
-        "404":
-          description: Usuario no encontrado.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Usuario no encontrado
-                    description: Mensaje de error indicando que el usuario no existe.
-        "500":
-          description: Error interno del servidor.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Error interno del servidor
-                    description: Mensaje de error genérico para errores del servidor.
-  /api/usuarios:
-    get:
-      summary: Obtener la lista de usuarios paginada
-      description: Retorna una lista de usuarios con paginación de 10 por página, ordenados por apellido ascendente.
+        "201":
+          description: Usuario creado correctamente
+        "400":
+          description: Error en los datos enviados
+  /api/usuarios/{id}:
+    put:
+      summary: Actualizar un usuario
+      tags:
+        - Usuarios
+      description: Actualiza un usuario existente por su ID.
       parameters:
-        - name: page
-          in: query
-          description: Número de la página a obtener (por defecto 1).
-          required: false
+        - name: id
+          in: path
+          required: true
           schema:
             type: integer
-            default: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                nombre:
+                  type: string
+                apellido:
+                  type: string
+                cedula:
+                  type: string
+                categoria_id:
+                  type: integer
+                disciplina_id:
+                  type: integer
+                roles:
+                  type: array
+                  items:
+                    type: integer
       responses:
         "200":
-          description: Lista de usuarios paginada y ordenada.
+          description: Usuario actualizado correctamente
+        "400":
+          description: Error en los datos enviados
+    delete:
+      summary: Eliminar un usuario
+      tags:
+        - Usuarios
+      description: Elimina un usuario por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Usuario eliminado correctamente
+        "400":
+          description: Error en la petición
+  /api/roles:
+    get:
+      summary: Obtener roles
+      tags:
+        - Roles
+      description: Obtiene una lista paginada de roles o un rol específico por ID.
+      parameters:
+        - name: id
+          in: query
+          description: ID del rol a buscar
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: Número de página para la paginación
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de roles obtenida correctamente
+        "400":
+          description: Error en los parámetros de entrada
+        "404":
+          description: Rol no encontrado
+    post:
+      summary: Crear un nuevo rol
+      tags:
+        - Roles
+      description: Crea un nuevo rol con los datos proporcionados.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        "201":
+          description: Rol creado correctamente
+        "400":
+          description: Error en los datos enviados
+  /api/roles/{id}:
+    put:
+      summary: Actualizar un rol
+      tags:
+        - Roles
+      description: Actualiza un rol existente por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        "200":
+          description: Rol actualizado correctamente
+        "400":
+          description: Error en los datos enviados
+    delete:
+      summary: Eliminar un rol
+      tags:
+        - Roles
+      description: Elimina un rol por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Rol eliminado correctamente
+        "400":
+          description: Error en la petición
+  # /api/disciplinas:
+  #   get:
+  #     summary: Obtener disciplinas
+  #     tags:
+  #       - Disciplinas
+  #     description: Obtiene una lista de disciplinas con paginación.
+  #     parameters:
+  #       - name: id
+  #         in: query
+  #         description: ID de la disciplina a obtener.
+  #         required: false
+  #         schema:
+  #           type: integer
+  #       - name: page
+  #         in: query
+  #         description: Número de página para la paginación.
+  #         required: false
+  #         schema:
+  #           type: integer
+  #           default: 1
+  #     responses:
+  #       "200":
+  #         description: Lista de disciplinas obtenida correctamente.
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 pagina:
+  #                   type: integer
+  #                 totalPaginas:
+  #                   type: integer
+  #                 totalDisciplinas:
+  #                   type: integer
+  #                 disciplinas:
+  #                   type: array
+  #                   items:
+  #                     $ref: "#/components/schemas/Disciplina"
+  #       "400":
+  #         description: Parámetro inválido en la solicitud.
+  #       "404":
+  #         description: Disciplina no encontrada.
+  #       "500":
+  #         description: Error interno del servidor.
+  #   post:
+  #     summary: Crear una nueva disciplina
+  #     tags:
+  #       - Disciplinas
+  #     description: Crea una nueva disciplina con el nombre proporcionado.
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             required:
+  #               - nombre
+  #             properties:
+  #               nombre:
+  #                 type: string
+  #     responses:
+  #       "201":
+  #         description: Disciplina creada exitosamente.
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: "#/components/schemas/Disciplina"
+  #       "400":
+  #         description: Datos inválidos en la solicitud.
+  #       "500":
+  #         description: Error al crear la disciplina.
+  # /api/disciplinas/{id}:
+    put:
+      summary: Actualizar una disciplina
+      tags:
+        - Disciplinas
+      description: Actualiza el nombre de una disciplina existente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - nombre
+              properties:
+                id:
+                  type: integer
+                nombre:
+                  type: string
+      responses:
+        "200":
+          description: Disciplina actualizada correctamente.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  page:
-                    type: integer
-                    description: Página actual.
-                  totalPages:
-                    type: integer
-                    description: Número total de páginas.
-                  totalUsuarios:
-                    type: integer
-                    description: Número total de usuarios en la base de datos.
-                  usuarios:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                          description: ID único del usuario.
-                        email:
-                          type: string
-                          format: email
-                          description: Correo electrónico del usuario.
-                        nombre:
-                          type: string
-                          description: Nombre del usuario.
-                        apellido:
-                          type: string
-                          description: Apellido del usuario.
-                        cedula:
-                          type: string
-                          description: Número de cédula del usuario.
-                        categoria_id:
-                          type: integer
-                          description: ID de la categoría del usuario.
-                        disciplina_id:
-                          type: integer
-                          description: ID de la disciplina del usuario.
-                        created_at:
-                          type: string
-                          format: date-time
-                          description: Fecha de creación del usuario.
-                        updated_at:
-                          type: string
-                          format: date-time
-                          description: Fecha de última actualización del usuario.
+                $ref: "#/components/schemas/Disciplina"
+        "400":
+          description: Datos inválidos en la solicitud.
         "500":
-          description: Error interno del servidor.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Mensaje de error.
+          description: Error al actualizar la disciplina.
+    delete:
+      summary: Eliminar una disciplina
+      tags:
+        - Disciplinas
+      description: Elimina una disciplina por su ID.
+      parameters:
+        - name: id
+          in: query
+          description: ID de la disciplina a eliminar.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Disciplina eliminada correctamente.
+        "400":
+          description: ID de disciplina no válido.
+        "500":
+          description: Error al eliminar la disciplina.
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+          example: usuario@ejemplo.com
+        password:
+          type: string
+          format: password
+          description: Contraseña del usuario
+          example: contraseña123
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Token JWT para autenticación
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        usuario:
+          type: object
+          properties:
+            id:
+              type: string
+              description: ID del usuario
+              example: 123e4567-e89b-12d3-a456-426614174000
+            email:
+              type: string
+              format: email
+              description: Correo electrónico del usuario
+              example: usuario@ejemplo.com
+      required:
+        - token
+        - usuario
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Mensaje de error
+      required:
+        - error
+      examples:
+        notFound:
+          value:
+            error: "Usuario no encontrado"
+        unauthorized:
+          value:
+            error: "Contraseña incorrecta"
+        serverError:
+          value:
+            error: "Error interno del servidor"
