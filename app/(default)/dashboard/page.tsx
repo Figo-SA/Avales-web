@@ -11,7 +11,7 @@ export default function Dashboard() {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      router.replace("/signin"); // Usar replace evita que se pueda regresar con el botón atrás
+      router.replace("/signin"); 
     } else {
       setIsLoading(false);
     }

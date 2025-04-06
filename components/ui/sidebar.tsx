@@ -8,6 +8,7 @@ import { getBreakpoint } from '../utils/utils'
 import SidebarLinkGroup from './sidebar-link-group'
 import SidebarLink from './sidebar-link'
 import Logo from './logo'
+import { useRouter } from 'next/navigation';
 
 export default function Sidebar() {
   const sidebar = useRef<HTMLDivElement>(null)
@@ -16,6 +17,13 @@ export default function Sidebar() {
   const segments = useSelectedLayoutSegments()  
   const [breakpoint, setBreakpoint] = useState<string | undefined>(getBreakpoint())
   const expandOnly = !sidebarExpanded && (breakpoint === 'lg' || breakpoint === 'xl')
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); 
+    router.push("/signin"); 
+  };
+ 
 
   // close on click outside
   useEffect(() => {
@@ -181,7 +189,7 @@ export default function Sidebar() {
               <span className="hidden lg:block lg:sidebar-expanded:hidden 2xl:hidden text-center w-6" aria-hidden="true">
                 •••
               </span>
-              <span className="lg:hidden lg:sidebar-expanded:block 2xl:block">Datos Usuario</span>
+              <span className="lg:hidden lg:sidebar-expanded:block 2xl:block">Datos del Usuario</span>
             </h3>
             <ul className="mt-3">
               {/* Authentication */}
@@ -235,11 +243,12 @@ export default function Sidebar() {
                             </SidebarLink>
                           </li>
                           <li className="mb-1 last:mb-0">
-                            <SidebarLink href="/reset-password">
-                              <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Cerrar Sesión
-                              </span>
-                            </SidebarLink>
+                          <button 
+                            onClick={handleLogout}
+                            className="text-sm font-medium w-full text-left text-red-500 hover:text-red-600 duration-200"
+                          >
+                            Cerrar Sesión
+                          </button>
                           </li>
                         </ul>
                       </div>

@@ -1,6 +1,6 @@
 export const metadata = {
-    title: "Dashboard - Mosaic",
-    description: "Page description",
+    title: "Inicio",
+    description: "Dashboard",
   };
   
   export default function DashboardLayout({ children }: { children: React.ReactNode }) {

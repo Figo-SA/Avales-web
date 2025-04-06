@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const passwordMatch = password === usuario.password;
+    const passwordMatch = await bcrypt.compare(password, usuario.password);
     // const passwordMatch = await bcrypt.compare(password, usuario.password);
     if (!passwordMatch) {
       return NextResponse.json(
@@ -35,16 +35,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const token = jwt.sign({ id: usuario.id, email: usuario.email }, JWT, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: usuario.id, email: usuario.email, role: usuario.rol }, 
+      JWT, 
+      { expiresIn: "1h" }
+    ); 
 
     return NextResponse.json({ token });
   } catch (er) {
-    console.log(er);
-    return NextResponse.json(
-      { error: "Error interno del servidor" },
-      { status: 500 }
-    );
+    console.error("Error en login:", er);
+    return NextResponse.json({ error: "Error interno en el servidor" }, { status: 500 });
   }
 }
