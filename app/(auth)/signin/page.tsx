@@ -19,7 +19,7 @@ export default function SignIn() {
     setError('');
 
     try {
-      const response = await fetch('https://avales-web.vercel.app/api/auth/login', {
+      const response = await fetch('https://avales-backend.onrender.com/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
