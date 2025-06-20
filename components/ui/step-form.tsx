@@ -4,12 +4,43 @@ import { use, useState } from "react";
 import Paso1DatosEvento from "./Paso1DatosEvento";
 import Paso2DetallesTecnicos from "./Paso2DetallesTecnicos";
 import Paso3Deportistas from "./Paso3Deportistas";
-import Paso4ObjetivosCriterios from "./Paso4ObjetivosCriterios";
-import Paso5RequerimientosFinancieros from "./Paso5RequerimientosFinancieros";
+import Paso4ObjetivosCriterios, {
+  Criterio,
+  Objetivo,
+} from "./Paso4ObjetivosCriterios";
+import Paso5RequerimientosFinancieros, {
+  AvalRequerimiento,
+} from "./Paso5RequerimientosFinancieros";
 import Paso6DocumentosConfirmacion from "./Paso6DocumentosConfirmacion";
 
 const StepForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [deportistas, setDeportistas] = useState<string[]>([]);
+  const [objetivos, setObjetivos] = useState<Objetivo[]>([]);
+  const [criterios, setCriterios] = useState<Criterio[]>([]);
+  const [requerimientos, setRequerimientos] = useState<AvalRequerimiento[]>([]);
+  const [solicitud, setSolicitud] = useState<any>(null);
+  const numeroAtletasRequerido = 5;
+
+  const handleDeportistasChange = (nuevosDeportistas: string[]) => {
+    setDeportistas(nuevosDeportistas);
+  };
+
+  const handleObjetivosChange = (nuevosObjetivos: Objetivo[]) => {
+    setObjetivos(nuevosObjetivos);
+  };
+
+  const handleCriteriosChange = (nuevosCriterios: Criterio[]) => {
+    setCriterios(nuevosCriterios);
+  };
+
+  const handleRequerimientosChange = (nuevosRequerimientos: AvalRequerimiento[]) => {
+    setRequerimientos(nuevosRequerimientos);
+  };
+
+  const handleDocumentoChange = (nuevoDocumento: any) => {
+    setSolicitud(nuevoDocumento);
+  };
 
   const steps = [
     {
@@ -25,22 +56,45 @@ const StepForm = () => {
     {
       id: 3,
       title: "Paso 3: Selección de Deportistas",
-      content: <Paso3Deportistas />,
+      content: (
+        <Paso3Deportistas
+          deportistas={deportistas}
+          numeroAtletasRequerido={numeroAtletasRequerido}
+          onDeportistasChange={handleDeportistasChange}
+        />
+      ),
     },
     {
       id: 4,
       title: "Paso 4: Objetivos y Criterios",
-      content: <Paso4ObjetivosCriterios />,
+      content: (
+        <Paso4ObjetivosCriterios
+          objetivos={objetivos}
+          criterios={criterios}
+          onObjetivosChange={handleObjetivosChange}
+          onCriteriosChange={handleCriteriosChange}
+        />
+      ),
     },
     {
       id: 5,
       title: "Paso 5: Requerimientos Financieros",
-      content: <Paso5RequerimientosFinancieros />,
+      content: (
+        <Paso5RequerimientosFinancieros
+          requerimientos={requerimientos}
+          onRequerimientosChange={handleRequerimientosChange}
+        />
+      ),
     },
     {
       id: 6,
       title: "Paso 6: Documentos y Confirmación",
-      content: <Paso6DocumentosConfirmacion />,
+      content: (
+        <Paso6DocumentosConfirmacion
+          solicitud={solicitud}
+          onDocumentoChange={handleDocumentoChange}
+        />
+      ),
     },
   ];
 

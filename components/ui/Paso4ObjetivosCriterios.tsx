@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
-interface Objetivo {
+export interface Objetivo {
   descripcion: string;
 }
 
-interface Criterio {
+export interface Criterio {
   descripcion: string;
 }
 
@@ -21,7 +21,9 @@ const Paso4ObjetivosCriterios = ({
 }) => {
   const [nuevoObjetivo, setNuevoObjetivo] = useState("");
   const [nuevoCriterio, setNuevoCriterio] = useState("");
-  const [mostrandoFormulario, setMostrandoFormulario] = useState<"objetivos" | "criterios" | null>(null);
+  const [mostrandoFormulario, setMostrandoFormulario] = useState<
+    "objetivos" | "criterios" | null
+  >(null);
 
   const agregarObjetivo = () => {
     if (!nuevoObjetivo.trim()) {
@@ -34,7 +36,9 @@ const Paso4ObjetivosCriterios = ({
   };
 
   const eliminarObjetivo = (index: number) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este objetivo?")) {
+    if (
+      window.confirm("¿Estás seguro de que quieres eliminar este objetivo?")
+    ) {
       onObjetivosChange(objetivos.filter((_, i) => i !== index));
     }
   };
@@ -50,7 +54,9 @@ const Paso4ObjetivosCriterios = ({
   };
 
   const eliminarCriterio = (index: number) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este criterio?")) {
+    if (
+      window.confirm("¿Estás seguro de que quieres eliminar este criterio?")
+    ) {
       onCriteriosChange(criterios.filter((_, i) => i !== index));
     }
   };
@@ -113,7 +119,10 @@ const Paso4ObjetivosCriterios = ({
         ) : (
           <ul className="space-y-2">
             {objetivos.map((objetivo, index) => (
-              <li key={index} className="flex justify-between items-center p-2 border rounded-md">
+              <li
+                key={index}
+                className="flex justify-between items-center p-2 border rounded-md"
+              >
                 <p>{objetivo.descripcion}</p>
                 <button
                   onClick={() => eliminarObjetivo(index)}
@@ -169,7 +178,10 @@ const Paso4ObjetivosCriterios = ({
         ) : (
           <ul className="space-y-2">
             {criterios.map((criterio, index) => (
-              <li key={index} className="flex justify-between items-center p-2 border rounded-md">
+              <li
+                key={index}
+                className="flex justify-between items-center p-2 border rounded-md"
+              >
                 <p>{criterio.descripcion}</p>
                 <button
                   onClick={() => eliminarCriterio(index)}

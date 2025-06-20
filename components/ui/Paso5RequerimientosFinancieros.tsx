@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-interface AvalRequerimiento {
+export interface AvalRequerimiento {
   rubro: string;
   cantidadDias: number;
   valorUnitario: number;
@@ -22,12 +22,16 @@ const rubrosComunes = [
   { label: "Arbitraje", value: "Arbitraje", icon: "fa:user-check" },
 ];
 
-const Paso5RequerimientosFinancieros: React.FC<Props> = ({ requerimientos = [], onRequerimientosChange = () => {} }) => {
-  const [nuevoRequerimiento, setNuevoRequerimiento] = useState<AvalRequerimiento>({
-    rubro: "",
-    cantidadDias: 0,
-    valorUnitario: 0,
-  });
+const Paso5RequerimientosFinancieros: React.FC<Props> = ({
+  requerimientos = [],
+  onRequerimientosChange = () => {},
+}) => {
+  const [nuevoRequerimiento, setNuevoRequerimiento] =
+    useState<AvalRequerimiento>({
+      rubro: "",
+      cantidadDias: 0,
+      valorUnitario: 0,
+    });
   const [rubroSeleccionado, setRubroSeleccionado] = useState("");
 
   const agregarRequerimiento = () => {
@@ -35,7 +39,10 @@ const Paso5RequerimientosFinancieros: React.FC<Props> = ({ requerimientos = [], 
       alert("Selecciona o escribe un rubro");
       return;
     }
-    if (nuevoRequerimiento.cantidadDias <= 0 || nuevoRequerimiento.valorUnitario <= 0) {
+    if (
+      nuevoRequerimiento.cantidadDias <= 0 ||
+      nuevoRequerimiento.valorUnitario <= 0
+    ) {
       alert("Los valores deben ser mayores a 0");
       return;
     }
@@ -45,7 +52,11 @@ const Paso5RequerimientosFinancieros: React.FC<Props> = ({ requerimientos = [], 
   };
 
   const eliminarRequerimiento = (index: number) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este requerimiento?")) {
+    if (
+      window.confirm(
+        "¿Estás seguro de que quieres eliminar este requerimiento?"
+      )
+    ) {
       const nuevosRequerimientos = requerimientos.filter((_, i) => i !== index);
       onRequerimientosChange(nuevosRequerimientos);
     }
@@ -83,42 +94,69 @@ const Paso5RequerimientosFinancieros: React.FC<Props> = ({ requerimientos = [], 
         <h3 className="text-lg font-bold mb-4">Agregar Requerimiento</h3>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Rubro</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Rubro
+          </label>
           <input
             type="text"
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
             placeholder="Ej: Transporte, Alimentación"
             value={nuevoRequerimiento.rubro}
-            onChange={(e) => setNuevoRequerimiento({ ...nuevoRequerimiento, rubro: e.target.value })}
+            onChange={(e) =>
+              setNuevoRequerimiento({
+                ...nuevoRequerimiento,
+                rubro: e.target.value,
+              })
+            }
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Cantidad de Días</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Cantidad de Días
+            </label>
             <input
               type="number"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               placeholder="0"
               value={nuevoRequerimiento.cantidadDias}
-              onChange={(e) => setNuevoRequerimiento({ ...nuevoRequerimiento, cantidadDias: parseInt(e.target.value) || 0 })}
+              onChange={(e) =>
+                setNuevoRequerimiento({
+                  ...nuevoRequerimiento,
+                  cantidadDias: parseInt(e.target.value) || 0,
+                })
+              }
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Valor Unitario</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Valor Unitario
+            </label>
             <input
               type="number"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               placeholder="0"
               value={nuevoRequerimiento.valorUnitario}
-              onChange={(e) => setNuevoRequerimiento({ ...nuevoRequerimiento, valorUnitario: parseFloat(e.target.value) || 0 })}
+              onChange={(e) =>
+                setNuevoRequerimiento({
+                  ...nuevoRequerimiento,
+                  valorUnitario: parseFloat(e.target.value) || 0,
+                })
+              }
             />
           </div>
         </div>
 
         <div className="mt-4 flex justify-end gap-4">
           <button
-            onClick={() => setNuevoRequerimiento({ rubro: "", cantidadDias: 0, valorUnitario: 0 })}
+            onClick={() =>
+              setNuevoRequerimiento({
+                rubro: "",
+                cantidadDias: 0,
+                valorUnitario: 0,
+              })
+            }
             className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md"
           >
             Limpiar
@@ -136,7 +174,10 @@ const Paso5RequerimientosFinancieros: React.FC<Props> = ({ requerimientos = [], 
       {requerimientos.length > 0 ? (
         <ul className="space-y-4">
           {requerimientos.map((req, index) => (
-            <li key={index} className="p-4 border rounded-md flex justify-between items-center">
+            <li
+              key={index}
+              className="p-4 border rounded-md flex justify-between items-center"
+            >
               <div>
                 <p className="font-bold">{req.rubro}</p>
                 <p className="text-sm text-gray-500">
