@@ -39,7 +39,7 @@ export default function Dashboard() {
     { estado: "Aceptado" },
   ];
 
-  const estados = avales.reduce(
+  const estados: { [key: string]: number } = avales.reduce(
     (acc, aval) => {
       acc[aval.estado] = (acc[aval.estado] || 0) + 1;
       return acc;
