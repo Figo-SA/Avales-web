@@ -31,15 +31,15 @@ export default function Dashboard() {
 
   // Datos simulados
   const avales = [
-    { estado: "Aceptado" },
-    { estado: "Pendiente" },
-    { estado: "Rechazado" },
-    { estado: "Aceptado" },
-    { estado: "Pendiente" },
-    { estado: "Aceptado" },
+    { estado: "Aceptado" as "Aceptado" },
+    { estado: "Pendiente" as "Pendiente" },
+    { estado: "Rechazado" as "Rechazado" },
+    { estado: "Aceptado" as "Aceptado" },
+    { estado: "Pendiente" as "Pendiente" },
+    { estado: "Aceptado" as "Aceptado" },
   ];
 
-  const estados: { [key: string]: number } = avales.reduce(
+  const estados = avales.reduce(
     (acc, aval) => {
       acc[aval.estado] = (acc[aval.estado] || 0) + 1;
       return acc;
