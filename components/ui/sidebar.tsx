@@ -195,6 +195,48 @@ export default function Sidebar() {
                               </span>
                             </SidebarLink>
                           </li>
+                          <li className="mb-1 last:mb-0">
+                            <SidebarLink href="/dashboard/avales">
+                              <span className="text-sm font-medium duration-200 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100">
+                                Avales
+                              </span>
+                            </SidebarLink>
+                          </li>
+                          <li>
+                            <a
+                              href="/dashboard/users"
+                              className="block text-slate-200 truncate transition duration-150 hover:text-white"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                  <svg
+                                    className="w-6 h-6 shrink-0"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      className="fill-current text-slate-600"
+                                      d="M8.07 16H10V8H8.07a8 8 0 110 8z"
+                                    />
+                                    <path
+                                      className="fill-current text-slate-400"
+                                      d="M15 12L8 6v5H0v2h8v5z"
+                                    />
+                                  </svg>
+                                  <span className="ml-3 text-sm font-medium duration-200 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100">
+                                    Usuarios
+                                  </span>
+                                </div>
+                              </div>
+                            </a>
+                          </li>
+                          <li>
+                            <a
+                              href="/dashboard/formulario"
+                              className="sidebar-link"
+                            >
+                              Progreso del Formulario
+                            </a>
+                          </li>
                         </ul>
                       </div>
                     </>
