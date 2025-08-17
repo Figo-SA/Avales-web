@@ -1,23 +1,23 @@
 import React, { useState } from "react";
 
 const disciplinas = [
-  { label: "Fútbol", value: "futbol" },
-  { label: "Natación", value: "natacion" },
-  { label: "Atletismo", value: "atletismo" },
-  { label: "Baloncesto", value: "baloncesto" },
-  { label: "Voleibol", value: "voleibol" },
+  { label: "Fútbol", value: "Fútbol" },
+  { label: "Natación", value: "Natación" },
+  { label: "Atletismo", value: "Atletismo" },
+  { label: "Baloncesto", value: "Baloncesto" },
+  { label: "Voleibol", value: "Voleibol" },
 ];
 
 const categorias = [
-  { label: "Infantil", value: "infantil" },
-  { label: "Juvenil", value: "juvenil" },
-  { label: "Senior", value: "senior" },
+  { label: "Infantil", value: "Infantil" },
+  { label: "Juvenil", value: "Juvenil" },
+  { label: "Senior", value: "Senior" },
 ];
 
 const generos = [
-  { label: "Masculino", value: "masculino" },
-  { label: "Femenino", value: "femenino" },
-  { label: "Mixto", value: "mixto" },
+  { label: "Masculino", value: "Masculino" },
+  { label: "Femenino", value: "Femenino" },
+  { label: "Mixto", value: "Mixto" },
 ];
 
 const Paso1DatosEvento = () => {
