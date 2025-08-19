@@ -30,8 +30,7 @@ export type Rubro = {
 };
 
 export type Requerimientos = {
-  rubrosIzquierda: Rubro[];
-  rubrosDerecha: Rubro[];
+  rubros: Rubro[];
 };
 
 export type AvalFormState = {

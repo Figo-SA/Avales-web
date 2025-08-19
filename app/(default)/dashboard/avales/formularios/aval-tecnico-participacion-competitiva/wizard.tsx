@@ -11,6 +11,9 @@ import type {
   Rubro,
 } from './types';
 import PreviewHojaAval from './preview';
+import AutoTextarea from './auto-textarea';
+
+/* ================== Estado inicial ================== */
 
 const defaultState: AvalFormState = {
   datos: {
@@ -36,30 +39,36 @@ const defaultState: AvalFormState = {
   ],
   delegacion: { oficiales: 2, atletasVarones: 9, atletasMujeres: 5 },
   requerimientos: {
-    rubrosIzquierda: [
+    rubros: [
       { nombre: 'TRANSPORTE PROVINCIAL', descripcion: '16 pasajes y 2 entrenadores — Loja–Biblián–Cañar–Loja', cantidad: 16 },
-      { nombre: 'ALIMENTACIÓN', descripcion: '4 días para 16 personas (14 deportistas y 2 entrenadores)', cantidad: 16*4 },
+      { nombre: 'ALIMENTACIÓN', descripcion: '4 días para 16 personas (14 deportistas y 2 entrenadores)', cantidad: 16 * 4 },
       { nombre: 'HOSPEDAJE', descripcion: '', cantidad: 0 },
-    ],
-    rubrosDerecha: [
-      // Deja libre para completar
     ],
   },
   observaciones:
     'Se solicita el apoyo económico de autogestión de FDL para transporte de regreso de Biblián (Cañar) a Loja, ya que solo tenemos en el PDA 136 dólares.',
 };
 
-type StepKey = 'datos' | 'delegacion' | 'objetivos' | 'criterios' | 'requerimientos' | 'observaciones' | 'preview';
+/* ================== Pasos ================== */
+
+type StepKey =
+  | 'datos'
+  | 'delegacion'
+  | 'objetivos'
+  | 'criterios'
+  | 'requerimientos'
+  | 'observaciones';
 
 const steps: { key: StepKey; title: string }[] = [
   { key: 'datos',          title: 'Datos informativos' },
   { key: 'delegacion',     title: 'Conformación de la delegación' },
   { key: 'objetivos',      title: 'Objetivos de participación' },
   { key: 'criterios',      title: 'Criterios de selección' },
-  { key: 'requerimientos', title: 'Requerimientos (RUBROS)' },
+  { key: 'requerimientos', title: 'Requerimientos (rubros)' },
   { key: 'observaciones',  title: 'Observaciones' },
-  { key: 'preview',        title: 'Vista previa e impresión' },
 ];
+
+/* ================== Componente principal ================== */
 
 export default function AvalFormWizard() {
   const [state, setState] = useState<AvalFormState>(defaultState);
@@ -70,109 +79,135 @@ export default function AvalFormWizard() {
     return (oficiales || 0) + (atletasMujeres || 0) + (atletasVarones || 0);
   }, [state.delegacion]);
 
-  const go = (dir: -1 | 1) => {
+  const go = (dir: -1 | 1) =>
     setCurrentIdx((i) => Math.min(steps.length - 1, Math.max(0, i + dir)));
-  };
 
   return (
     <div className="w-full">
-      {/* Step Indicator */}
-      <ol className="flex flex-wrap gap-2 mb-6">
-        {steps.map((s, i) => {
-          const active = i === currentIdx;
-          const done = i < currentIdx;
-          return (
-            <li key={s.key}>
-              <button
-                onClick={() => setCurrentIdx(i)}
-                className={`px-3 py-1.5 rounded-full text-sm border
-                  ${active ? 'bg-indigo-500 text-white border-indigo-500' :
-                    done ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/10 dark:text-emerald-300 dark:border-emerald-800' :
-                    'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 dark:border-slate-700'}`}
-                title={s.title}
-              >
-                {i + 1}. {s.title}
-              </button>
-            </li>
-          );
-        })}
-      </ol>
+      {/* Grid 2 columnas: izquierda formulario, derecha preview fija */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* ========== Columna izquierda: Wizard ========== */}
+        <div className="print:hidden">
+          {/* Indicador de pasos (tabs horizontales sencillos) */}
+          <ol className="flex flex-wrap gap-2 mb-4">
+            {steps.map((s, i) => {
+              const active = i === currentIdx;
+              const done = i < currentIdx;
+              return (
+                <li key={s.key}>
+                  <button
+                    onClick={() => setCurrentIdx(i)}
+                    className={`px-3 py-1.5 rounded-full text-sm border transition
+                      ${active
+                        ? 'bg-indigo-500 text-white border-indigo-500'
+                        : done
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/10 dark:text-emerald-300 dark:border-emerald-800'
+                        : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 dark:border-slate-700'}`}
+                    title={s.title}
+                  >
+                    {i + 1}. {s.title}
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
 
-      {/* Step Body */}
-      <div className="bg-white dark:bg-slate-800 shadow rounded-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
-        {steps[currentIdx].key === 'datos' && (
-          <StepDatos value={state.datos} onChange={(v) => setState((s)=>({ ...s, datos: v }))} />
-        )}
+          {/* Contenido del paso */}
+          <div className="bg-white dark:bg-slate-800 shadow rounded-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+            {steps[currentIdx].key === 'datos' && (
+              <StepDatos value={state.datos} onChange={(v) => setState((s) => ({ ...s, datos: v }))} />
+            )}
 
-        {steps[currentIdx].key === 'delegacion' && (
-          <StepDelegacion value={state.delegacion} total={totalPersonas} onChange={(v)=> setState((s)=>({ ...s, delegacion: v }))} />
-        )}
+            {steps[currentIdx].key === 'delegacion' && (
+              <StepDelegacion
+                value={state.delegacion}
+                total={totalPersonas}
+                onChange={(v) => setState((s) => ({ ...s, delegacion: v }))}
+              />
+            )}
 
-        {steps[currentIdx].key === 'objetivos' && (
-          <StepListaNumerada
-            title="Objetivos de participación"
-            value={state.objetivos}
-            onChange={(v)=> setState((s)=>({ ...s, objetivos: v }))}
-          />
-        )}
+            {steps[currentIdx].key === 'objetivos' && (
+              <StepListaNumerada
+                title="Objetivos de participación"
+                value={state.objetivos}
+                onChange={(v) => setState((s) => ({ ...s, objetivos: v }))}
+              />
+            )}
 
-        {steps[currentIdx].key === 'criterios' && (
-          <StepListaNumerada
-            title="Criterios de selección"
-            value={state.criterios}
-            onChange={(v)=> setState((s)=>({ ...s, criterios: v }))}
-          />
-        )}
+            {steps[currentIdx].key === 'criterios' && (
+              <StepListaNumerada
+                title="Criterios de selección"
+                value={state.criterios}
+                onChange={(v) => setState((s) => ({ ...s, criterios: v }))}
+              />
+            )}
 
-        {steps[currentIdx].key === 'requerimientos' && (
-          <StepRequerimientos value={state.requerimientos} onChange={(v)=> setState((s)=>({ ...s, requerimientos: v }))} />
-        )}
+            {steps[currentIdx].key === 'requerimientos' && (
+              <StepRequerimientos
+                value={state.requerimientos}
+                onChange={(v) => setState((s) => ({ ...s, requerimientos: v }))}
+              />
+            )}
 
-        {steps[currentIdx].key === 'observaciones' && (
-          <StepObservaciones value={state.observaciones || ''} onChange={(v)=> setState((s)=>({ ...s, observaciones: v }))} />
-        )}
+            {steps[currentIdx].key === 'observaciones' && (
+              <StepObservaciones
+                value={state.observaciones || ''}
+                onChange={(v) => setState((s) => ({ ...s, observaciones: v }))}
+              />
+            )}
+          </div>
 
-        {steps[currentIdx].key === 'preview' && (
-          <PreviewHojaAval state={state} />
-        )}
-      </div>
+          {/* Navegación */}
+          <div className="mt-4 flex justify-between">
+            <button
+              className="btn border-slate-200 dark:border-slate-700"
+              onClick={() => go(-1)}
+              disabled={currentIdx === 0}
+            >
+              Anterior
+            </button>
+            <button
+              className="btn bg-indigo-500 hover:bg-indigo-600 text-white"
+              onClick={() => go(1)}
+              disabled={currentIdx === steps.length - 1}
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
 
-      {/* Footer nav */}
-      <div className="mt-4 flex justify-between">
-        <button
-          className="btn border-slate-200 dark:border-slate-700"
-          onClick={() => go(-1)}
-          disabled={currentIdx === 0}
-        >
-          Anterior
-        </button>
-        {steps[currentIdx].key !== 'preview' ? (
-          <button
-            className="btn bg-indigo-500 hover:bg-indigo-600 text-white"
-            onClick={() => go(1)}
-          >
-            Siguiente
-          </button>
-        ) : (
-          <div className="space-x-2">
-            <button className="btn border-slate-200 dark:border-slate-700" onClick={() => window.print()}>
+        {/* ========== Columna derecha: Preview siempre visible (sticky) ========== */}
+        <div className="xl:sticky xl:top-6 h-fit">
+          <div className="mb-3 flex items-center justify-between print:hidden">
+            <h2 className="text-lg font-semibold">Vista previa e impresión</h2>
+            <button
+              className="btn border-slate-200 dark:border-slate-700"
+              onClick={() => window.print()}
+            >
               Imprimir / Exportar
             </button>
           </div>
-        )}
+
+          {/* Contenedor con borde para diferenciar y simular hoja */}
+          <div className="bg-white dark:bg-slate-800 shadow rounded-sm border border-slate-200 dark:border-slate-700 p-3">
+            <PreviewHojaAval state={state} />
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-/* ---------------------- STEPS ---------------------- */
+/* ================== Helpers UI & Steps ================== */
 
 function Field({
-  label, children, required
+  label, children, required,
 }: { label: string; children: React.ReactNode; required?: boolean }) {
   return (
     <label className="block">
-      <span className="block text-xs font-semibold text-slate-500 mb-1">{label}{required && ' *'}</span>
+      <span className="block text-xs font-semibold text-slate-500 mb-1">
+        {label}{required && ' *'}
+      </span>
       {children}
     </label>
   );
@@ -180,22 +215,22 @@ function Field({
 
 /* Paso: Datos informativos */
 function StepDatos({
-  value, onChange
+  value, onChange,
 }: { value: DatosInformativos; onChange: (v: DatosInformativos) => void }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <Field label="Deporte" required>
-        <input className="form-input w-full" value={value.deporte} onChange={(e)=> onChange({ ...value, deporte: e.target.value })} />
+        <input className="form-input w-full" value={value.deporte} onChange={(e) => onChange({ ...value, deporte: e.target.value })} />
       </Field>
       <Field label="Categorías" required>
-        <input className="form-input w-full" value={value.categorias} onChange={(e)=> onChange({ ...value, categorias: e.target.value })} />
+        <input className="form-input w-full" value={value.categorias} onChange={(e) => onChange({ ...value, categorias: e.target.value })} />
       </Field>
 
       <Field label="Género" required>
         <select
           className="form-select w-full"
           value={value.genero}
-          onChange={(e)=> onChange({ ...value, genero: e.target.value as any })}
+          onChange={(e) => onChange({ ...value, genero: e.target.value as any })}
         >
           <option>Masculino</option>
           <option>Femenino</option>
@@ -203,52 +238,67 @@ function StepDatos({
         </select>
       </Field>
       <Field label="Evento" required>
-        <input className="form-input w-full" value={value.evento} onChange={(e)=> onChange({ ...value, evento: e.target.value })} />
+        <input className="form-input w-full" value={value.evento} onChange={(e) => onChange({ ...value, evento: e.target.value })} />
       </Field>
 
       <Field label="Lugar" required>
-        <input className="form-input w-full" value={value.lugar} onChange={(e)=> onChange({ ...value, lugar: e.target.value })} />
+        <input className="form-input w-full" value={value.lugar} onChange={(e) => onChange({ ...value, lugar: e.target.value })} />
       </Field>
 
       <div className="grid grid-cols-2 gap-4">
         <Field label="Fecha desde" required>
-          <input type="date" className="form-input w-full" value={value.fechaDesde} onChange={(e)=> onChange({ ...value, fechaDesde: e.target.value })} />
+          <input type="date" className="form-input w-full" value={value.fechaDesde} onChange={(e) => onChange({ ...value, fechaDesde: e.target.value })} />
         </Field>
         <Field label="Fecha hasta" required>
-          <input type="date" className="form-input w-full" value={value.fechaHasta} onChange={(e)=> onChange({ ...value, fechaHasta: e.target.value })} />
+          <input type="date" className="form-input w-full" value={value.fechaHasta} onChange={(e) => onChange({ ...value, fechaHasta: e.target.value })} />
         </Field>
       </div>
 
       <Field label="Entrenador 1" required>
-        <input className="form-input w-full" value={value.entrenador1} onChange={(e)=> onChange({ ...value, entrenador1: e.target.value })} />
+        <AutoTextarea
+          value={value.entrenador1}
+          onChange={(val) => onChange({ ...value, entrenador1: val })}
+          minRows={1}
+          maxRows={3}
+        />
       </Field>
       <Field label="Entrenador 2">
-        <input className="form-input w-full" value={value.entrenador2 || ''} onChange={(e)=> onChange({ ...value, entrenador2: e.target.value })} />
+        <AutoTextarea
+          value={value.entrenador2 || ''}
+          onChange={(val) => onChange({ ...value, entrenador2: val })}
+          minRows={1}
+          maxRows={3}
+        />
       </Field>
 
       <div className="md:col-span-2">
         <Field label="Otros">
-          <input className="form-input w-full" value={value.otros || ''} onChange={(e)=> onChange({ ...value, otros: e.target.value })} />
+          <AutoTextarea
+            value={value.otros || ''}
+            onChange={(val) => onChange({ ...value, otros: val })}
+            minRows={1}
+            maxRows={4}
+          />
         </Field>
       </div>
     </div>
   );
 }
 
-/* Paso: Delegacion */
+/* Paso: Delegación */
 function StepDelegacion({
-  value, onChange, total
-}: { value: Delegacion; onChange: (v: Delegacion)=>void; total: number }) {
+  value, onChange, total,
+}: { value: Delegacion; onChange: (v: Delegacion) => void; total: number }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
       <Field label="Oficiales" required>
-        <input type="number" min={0} className="form-input w-full" value={value.oficiales} onChange={(e)=> onChange({ ...value, oficiales: Number(e.target.value || 0) })} />
+        <input type="number" min={0} className="form-input w-full" value={value.oficiales} onChange={(e) => onChange({ ...value, oficiales: Number(e.target.value || 0) })} />
       </Field>
       <Field label="Atletas (V)" required>
-        <input type="number" min={0} className="form-input w-full" value={value.atletasVarones} onChange={(e)=> onChange({ ...value, atletasVarones: Number(e.target.value || 0) })} />
+        <input type="number" min={0} className="form-input w-full" value={value.atletasVarones} onChange={(e) => onChange({ ...value, atletasVarones: Number(e.target.value || 0) })} />
       </Field>
       <Field label="Atletas (M)" required>
-        <input type="number" min={0} className="form-input w-full" value={value.atletasMujeres} onChange={(e)=> onChange({ ...value, atletasMujeres: Number(e.target.value || 0) })} />
+        <input type="number" min={0} className="form-input w-full" value={value.atletasMujeres} onChange={(e) => onChange({ ...value, atletasMujeres: Number(e.target.value || 0) })} />
       </Field>
       <div>
         <div className="text-xs font-semibold text-slate-500 mb-1">Total</div>
@@ -256,67 +306,81 @@ function StepDelegacion({
           {total}
         </div>
       </div>
-      <div className="sm:col-span-4 text-xs text-slate-500 mt-1">Nota: adjuntar hoja Excel con el detalle de los atletas.</div>
+      <div className="sm:col-span-4 text-xs text-slate-500 mt-1">
+        Nota: adjuntar hoja Excel con el detalle de los atletas.
+      </div>
     </div>
   );
 }
 
 /* Paso: Objetivos / Criterios (lista numerada editable) */
 function StepListaNumerada({
-  title, value, onChange
-}: { title: string; value: (Objetivo|Criterio)[]; onChange: (v: any[])=>void }) {
+  title, value, onChange,
+}: { title: string; value: (Objetivo | Criterio)[]; onChange: (v: any[]) => void }) {
   const add = () => {
-    const nro = (value[value.length-1]?.nro || 0) + 1;
-    onChange([ ...value, { nro, texto: '' } ]);
+    const nro = (value[value.length - 1]?.nro || 0) + 1;
+    onChange([...value, { nro, texto: '' }]);
   };
-  const remove = (nro: number) => onChange(value.filter(v=> v.nro !== nro));
-  const update = (nro: number, texto: string) => onChange(value.map(v=> v.nro===nro? { ...v, texto } : v));
+  const remove = (nro: number) => onChange(value.filter((v) => v.nro !== nro));
+  const update = (nro: number, texto: string) =>
+    onChange(value.map((v) => (v.nro === nro ? { ...v, texto } : v)));
 
   return (
     <div>
-      <div className="text-sm font-medium text-slate-700 dark:text-slate-200 mb-3">{title}</div>
+      <div className="text-sm font-medium text-slate-700 dark:text-slate-200 mb-3">
+        {title}
+      </div>
       <div className="space-y-3">
-        {value.map((v)=> (
+        {value.map((v) => (
           <div key={v.nro} className="flex gap-2">
-            <div className="w-10 h-10 flex items-center justify-center rounded bg-slate-100 dark:bg-slate-700/30 text-slate-700 dark:text-slate-200 font-semibold">{v.nro}</div>
-            <input className="form-input w-full" value={v.texto} placeholder="Escribe aquí..." onChange={(e)=> update(v.nro, e.target.value)} />
-            <button className="btn border-slate-200 dark:border-slate-700" onClick={()=> remove(v.nro)}>Quitar</button>
+            <div className="w-10 h-10 flex items-center justify-center rounded bg-slate-100 dark:bg-slate-700/30 text-slate-700 dark:text-slate-200 font-semibold">
+              {v.nro}
+            </div>
+            <AutoTextarea
+              value={v.texto}
+              onChange={(val) => update(v.nro, val)}
+              placeholder="Escribe aquí..."
+              minRows={1}
+              maxRows={8}
+            />
+            <button
+              className="btn border-slate-200 dark:border-slate-700"
+              onClick={() => remove(v.nro)}
+            >
+              Quitar
+            </button>
           </div>
         ))}
       </div>
       <div className="mt-4">
-        <button className="btn bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700" onClick={add}>Agregar ítem</button>
+        <button
+          className="btn bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700"
+          onClick={add}
+        >
+          Agregar ítem
+        </button>
       </div>
     </div>
   );
 }
 
-/* Paso: Requerimientos (dos columnas como en la hoja) */
+/* Paso: Requerimientos (una sola columna) */
 function StepRequerimientos({
   value, onChange
 }: { value: Requerimientos; onChange: (v: Requerimientos)=>void }) {
-  const updateCell = (side: 'izq'|'der', idx: number, patch: Partial<Rubro>) => {
-    const key = side === 'izq' ? 'rubrosIzquierda' : 'rubrosDerecha';
-    const list = [...value[key]];
+
+  const updateRow = (idx: number, patch: Partial<Rubro>) => {
+    const list = [...value.rubros];
     list[idx] = { ...list[idx], ...patch };
-    onChange({ ...value, [key]: list });
-  };
-  const addRow = (side:'izq'|'der') => {
-    const key = side === 'izq' ? 'rubrosIzquierda' : 'rubrosDerecha';
-    onChange({ ...value, [key]: [ ...value[key], { nombre: '', descripcion: '', cantidad: undefined, valorUnitario: undefined } ] });
-  };
-  const removeRow = (side:'izq'|'der', idx:number) => {
-    const key = side === 'izq' ? 'rubrosIzquierda' : 'rubrosDerecha';
-    const list = value[key].filter((_,i)=> i!==idx);
-    onChange({ ...value, [key]: list });
+    onChange({ rubros: list });
   };
 
-  const total = (list: Rubro[]) =>
-    list.reduce((acc, r) => acc + (r.cantidad || 0) * (r.valorUnitario || 0), 0);
+  const addRow = () => onChange({ rubros: [...value.rubros, { nombre: '', descripcion: '', cantidad: undefined, valorUnitario: undefined }] });
+  const removeRow = (idx: number) => onChange({ rubros: value.rubros.filter((_, i) => i !== idx) });
 
-  const totalGeneral = total(value.rubrosIzquierda) + total(value.rubrosDerecha);
+  const total = value.rubros.reduce((acc, r) => acc + (r.cantidad || 0) * (r.valorUnitario || 0), 0);
 
-  const Tabla = ({ side, rows }: { side: 'izq'|'der'; rows: Rubro[] }) => (
+  return (
     <div className="overflow-x-auto border rounded border-slate-200 dark:border-slate-700">
       <table className="table-auto w-full">
         <thead className="bg-slate-50 dark:bg-slate-700/30 text-xs uppercase text-slate-500">
@@ -329,55 +393,76 @@ function StepRequerimientos({
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100 dark:divide-slate-700 text-sm">
-          {rows.map((r, idx) => (
+          {value.rubros.map((r, idx) => (
             <tr key={idx}>
               <td className="px-2 py-2">
-                <input className="form-input w-full" value={r.nombre} placeholder="Concepto" onChange={(e)=> updateCell(side, idx, { nombre: e.target.value })} />
-                <input className="form-input w-full mt-2" value={r.descripcion || ''} placeholder="Detalle (opcional)" onChange={(e)=> updateCell(side, idx, { descripcion: e.target.value })} />
+                <AutoTextarea
+                  value={r.nombre}
+                  onChange={(val)=> updateRow(idx, { nombre: val })}
+                  placeholder="Concepto"
+                  minRows={1}
+                  maxRows={4}
+                />
+                <AutoTextarea
+                  className="mt-2"
+                  value={r.descripcion || ''}
+                  onChange={(val)=> updateRow(idx, { descripcion: val })}
+                  placeholder="Detalle (opcional)"
+                  minRows={1}
+                  maxRows={8}
+                />
               </td>
               <td className="px-2 py-2">
-                <input type="number" className="form-input w-full" value={r.cantidad ?? ''} placeholder="0" onChange={(e)=> updateCell(side, idx, { cantidad: e.target.value === '' ? undefined : Number(e.target.value) })} />
+                <input
+                  type="number"
+                  className="form-input w-full"
+                  value={r.cantidad ?? ''}
+                  placeholder="0"
+                  onChange={(e)=> updateRow(idx, { cantidad: e.target.value === '' ? undefined : Number(e.target.value) })}
+                />
               </td>
               <td className="px-2 py-2">
-                <input type="number" className="form-input w-full" value={r.valorUnitario ?? ''} placeholder="0.00" step="0.01" onChange={(e)=> updateCell(side, idx, { valorUnitario: e.target.value === '' ? undefined : Number(e.target.value) })} />
+                <input
+                  type="number"
+                  className="form-input w-full"
+                  value={r.valorUnitario ?? ''}
+                  placeholder="0.00"
+                  step="0.01"
+                  onChange={(e)=> updateRow(idx, { valorUnitario: e.target.value === '' ? undefined : Number(e.target.value) })}
+                />
               </td>
+              <td className="px-2 py-2">{(((r.cantidad || 0) * (r.valorUnitario || 0))).toFixed(2)}</td>
               <td className="px-2 py-2">
-                {( (r.cantidad || 0) * (r.valorUnitario || 0) ).toFixed(2)}
-              </td>
-              <td className="px-2 py-2">
-                <button className="btn border-slate-200 dark:border-slate-700" onClick={()=> removeRow(side, idx)}>Quitar</button>
+                <button className="btn border-slate-200 dark:border-slate-700" onClick={()=> removeRow(idx)}>Quitar</button>
               </td>
             </tr>
           ))}
-          {rows.length === 0 && (
+          {value.rubros.length === 0 && (
             <tr>
-              <td colSpan={5} className="px-2 py-3 text-slate-500 text-center">Sin rubros</td>
+              <td className="px-2 py-3 text-slate-500 text-center" colSpan={5}>Sin rubros</td>
             </tr>
           )}
         </tbody>
       </table>
       <div className="p-2 flex justify-between items-center text-sm">
-        <button className="btn border-slate-200 dark:border-slate-700" onClick={()=> addRow(side)}>Agregar rubro</button>
-        <div className="font-medium">Subtotal: {total(rows).toFixed(2)}</div>
+        <button className="btn border-slate-200 dark:border-slate-700" onClick={addRow}>Agregar rubro</button>
+        <div className="font-medium">Total: {total.toFixed(2)}</div>
       </div>
-    </div>
-  );
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <Tabla side="izq" rows={value.rubrosIzquierda} />
-      <Tabla side="der" rows={value.rubrosDerecha} />
-      <div className="lg:col-span-2 text-right font-semibold">Total general: {totalGeneral.toFixed(2)}</div>
     </div>
   );
 }
 
 /* Paso: Observaciones */
-function StepObservaciones({ value, onChange }:{ value: string; onChange:(v:string)=>void }) {
+function StepObservaciones({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div>
       <label className="block text-xs font-semibold text-slate-500 mb-1">Observaciones</label>
-      <textarea className="form-textarea w-full min-h-[120px]" value={value} onChange={(e)=> onChange(e.target.value)} />
+      <AutoTextarea
+        value={value}
+        onChange={onChange}
+        minRows={3}
+        maxRows={10}
+      />
     </div>
   );
 }
