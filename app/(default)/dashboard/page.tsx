@@ -1,11 +1,18 @@
-"use client"; // Ahora es un componente de cliente válido
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-
-ChartJS.register(ArcElement, Tooltip, Legend);
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import { MuiThemeProvider } from "@/components/mui-theme-provider";
+import {
+  AvalesWidgetSummary,
+  AvalesTiposChart,
+  AvalesMensualesChart,
+  AvalesEstadosChart,
+  AvalesDeportesChart,
+} from "@/components/analytics";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -15,7 +22,7 @@ export default function Dashboard() {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      router.replace("/signin"); // Usar replace evita que se pueda regresar con el botón atrás
+      router.replace("/signin");
     } else {
       setIsLoading(false);
     }
@@ -29,75 +36,167 @@ export default function Dashboard() {
     );
   }
 
-  // Datos simulados
-  const avales = [
-    { estado: "Aceptado" as "Aceptado" },
-    { estado: "Pendiente" as "Pendiente" },
-    { estado: "Rechazado" as "Rechazado" },
-    { estado: "Aceptado" as "Aceptado" },
-    { estado: "Pendiente" as "Pendiente" },
-    { estado: "Aceptado" as "Aceptado" },
-  ];
-
-  const estados = avales.reduce(
-    (acc, aval) => {
-      acc[aval.estado] = (acc[aval.estado] || 0) + 1;
-      return acc;
-    },
-    { Aceptado: 0, Pendiente: 0, Rechazado: 0 }
-  );
-
-  const data = {
-    labels: ["Aceptado", "Pendiente", "Rechazado"],
-    datasets: [
-      {
-        label: "Estados de Avales",
-        data: [estados.Aceptado, estados.Pendiente, estados.Rechazado],
-        backgroundColor: ["#4CAF50", "#FFC107", "#F44336"],
-        borderWidth: 1,
-      },
-    ],
-  };
-
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[96rem] mx-auto">
-      {/* Dashboard actions */}
-      <div className="mb-8 sm:flex sm:justify-between sm:items-center">
-        <div className="grid justify-start grid-flow-col gap-2 sm:auto-cols-max sm:justify-end"></div>
-      </div>
+    <MuiThemeProvider>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Typography variant="h4" sx={{ mb: 5 }}>
+          📊 Dashboard de Avales Deportivos
+        </Typography>
 
-      {/* Estadísticas */}
-      <div className="mb-8">
-        <h2 className="text-xl font-bold mb-4">Estados de Avales</h2>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="p-4 bg-green-100 rounded-md text-center">
-            <p className="text-lg font-bold text-green-600">
-              {estados.Aceptado}
-            </p>
-            <p className="text-sm text-gray-600">Aceptados</p>
-          </div>
-          <div className="p-4 bg-yellow-100 rounded-md text-center">
-            <p className="text-lg font-bold text-yellow-600">
-              {estados.Pendiente}
-            </p>
-            <p className="text-sm text-gray-600">Pendientes</p>
-          </div>
-          <div className="p-4 bg-red-100 rounded-md text-center">
-            <p className="text-lg font-bold text-red-600">
-              {estados.Rechazado}
-            </p>
-            <p className="text-sm text-gray-600">Rechazados</p>
-          </div>
-        </div>
-      </div>
+        {/* Widgets de Resumen */}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "1fr 1fr",
+              md: "repeat(4, 1fr)",
+            },
+            gap: 3,
+            mb: 4,
+          }}
+        >
+          <AvalesWidgetSummary
+            title="Avales Totales"
+            percent={15.2}
+            total={234}
+            icon="📋"
+            chart={{
+              categories: ["Ene", "Feb", "Mar", "Abr", "May", "Jun"],
+              series: [22, 8, 35, 50, 82, 84],
+            }}
+          />
 
-      {/* Gráfico */}
-      <div className="mb-8">
-        <h2 className="text-xl font-bold mb-4">Gráfico de Estados</h2>
-        <div className="w-full max-w-md mx-auto">
-          <Pie data={data} />
-        </div>
-      </div>
-    </div>
+          <AvalesWidgetSummary
+            title="Aprobados"
+            percent={8.7}
+            total={187}
+            color="secondary"
+            icon="✅"
+            chart={{
+              categories: ["Ene", "Feb", "Mar", "Abr", "May", "Jun"],
+              series: [18, 12, 28, 42, 65, 78],
+            }}
+          />
+
+          <AvalesWidgetSummary
+            title="Pendientes"
+            percent={-2.1}
+            total={32}
+            color="warning"
+            icon="⏳"
+            chart={{
+              categories: ["Ene", "Feb", "Mar", "Abr", "May", "Jun"],
+              series: [8, 5, 12, 18, 22, 25],
+            }}
+          />
+
+          <AvalesWidgetSummary
+            title="Rechazados"
+            percent={1.3}
+            total={15}
+            color="error"
+            icon="❌"
+            chart={{
+              categories: ["Ene", "Feb", "Mar", "Abr", "May", "Jun"],
+              series: [2, 1, 3, 5, 4, 6],
+            }}
+          />
+        </Box>
+
+        {/* Primera fila de gráficas */}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", lg: "1fr 2fr" },
+            gap: 3,
+            mb: 4,
+          }}
+        >
+          <AvalesTiposChart
+            title="Tipos de Avales"
+            subheader="Distribución por tipo"
+            chart={{
+              series: [
+                { label: "Técnico Participación", value: 95 },
+                { label: "Técnico Competitivo", value: 78 },
+                { label: "Administrativo", value: 45 },
+                { label: "Financiero", value: 16 },
+              ],
+            }}
+          />
+
+          <AvalesMensualesChart
+            title="Avales por Mes"
+            subheader="Tendencia mensual (+25%) vs año anterior"
+            chart={{
+              categories: [
+                "Ene",
+                "Feb",
+                "Mar",
+                "Abr",
+                "May",
+                "Jun",
+                "Jul",
+                "Ago",
+                "Sep",
+              ],
+              series: [
+                { name: "2024", data: [23, 33, 22, 37, 47, 38, 27, 34, 45] },
+                { name: "2023", data: [18, 28, 18, 32, 42, 33, 22, 29, 40] },
+              ],
+            }}
+          />
+        </Box>
+
+        {/* Segunda fila de gráficas */}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", lg: "2fr 1fr" },
+            gap: 3,
+          }}
+        >
+          <AvalesEstadosChart
+            title="Estados de Avales"
+            subheader="Por modalidad deportiva"
+            chart={{
+              categories: [
+                "Fútbol",
+                "Básquet",
+                "Voleibol",
+                "Atletismo",
+                "Natación",
+              ],
+              series: [
+                { name: "Aprobados", data: [44, 35, 28, 32, 18] },
+                { name: "Pendientes", data: [12, 8, 15, 10, 7] },
+                { name: "Rechazados", data: [3, 2, 4, 2, 1] },
+              ],
+            }}
+          />
+
+          <AvalesDeportesChart
+            title="Categorías Deportivas"
+            subheader="Distribución por deporte"
+            chart={{
+              categories: [
+                "Fútbol",
+                "Básquet",
+                "Voleibol",
+                "Atletismo",
+                "Natación",
+                "Tenis",
+              ],
+              series: [
+                { name: "Juvenil", data: [80, 50, 30, 40, 60, 20] },
+                { name: "Senior", data: [60, 70, 50, 65, 45, 35] },
+                { name: "Master", data: [40, 30, 40, 50, 35, 45] },
+              ],
+            }}
+          />
+        </Box>
+      </Container>
+    </MuiThemeProvider>
   );
 }
