@@ -1,20 +1,21 @@
-export type Genero = 'Masculino' | 'Femenino' | 'Mixto';
+export type Genero = "Masculino" | "Femenino" | "Mixto";
 
 export type DatosInformativos = {
   deporte: string;
-  categorias: string;            // U-17 (PRE JUVENIL)
+  categorias: string;
   genero: Genero;
-  evento: string;                // Base de Entrenamiento
-  lugar: string;                 // Cañar (Biblián)
-  fechaDesde: string;            // ISO yyyy-mm-dd
-  fechaHasta: string;            // ISO yyyy-mm-dd
-  entrenador1: string;           // nombre + cédula
+  evento: string;
+  lugar: string;
+  fechaDesde: string; // ISO YYYY-MM-DD
+  fechaHasta: string; // ISO YYYY-MM-DD
+  entrenador1: string;
   entrenador2?: string;
   otros?: string;
 };
 
-export type Objetivo = { nro: number; texto: string };
-export type Criterio = { nro: number; texto: string };
+export type Numerado = { nro: number; texto: string };
+export type Objetivo = Numerado;
+export type Criterio = Numerado;
 
 export type Delegacion = {
   oficiales: number;
@@ -41,3 +42,11 @@ export type AvalFormState = {
   requerimientos: Requerimientos;
   observaciones?: string;
 };
+
+export type StepKey =
+  | "datos"
+  | "delegacion"
+  | "objetivos"
+  | "criterios"
+  | "requerimientos"
+  | "observaciones";
