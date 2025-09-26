@@ -20,14 +20,14 @@ export default function SignIn() {
 
     try {
       const response = await fetch(
-        "https://avales-backend.onrender.com/api/v1/auth/login",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ email, password }),
-        },
+        }
       );
 
       const data = await response.json();
@@ -129,7 +129,9 @@ export default function SignIn() {
             <div className="flex justify-center mt-6">
               <button
                 type="submit"
-                className={`w-full flex justify-center items-center bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-md transition duration-200 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`w-full flex justify-center items-center bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-md transition duration-200 ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
                 disabled={loading}
               >
                 {loading ? "Ingresando..." : "Ingresar"}
